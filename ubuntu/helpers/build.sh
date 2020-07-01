@@ -20,8 +20,32 @@ apt-get install -yq \
     man-db \
     net-tools \
     iputils-ping
+    build-essential \
+    meson \
+    strace \
+    m4 \
+    gperf \
+    libcap-dev \
+    pkg-config \
+    cmake \
+    libmount-dev \
+    git
 apt-get -qq clean
 apt-get -qq autoremove
+
+#### XXX debugging systemd ####
+old_dir=$(pwd)
+mkdir src
+cd src
+git clone https://github.com/systemd/systemd.git
+cd systemd
+git checkout v245
+CFLAGS="-fno-omit-frame-pointer" meson build/ && ninja -C build
+cd build
+ninja install
+cd "$old_dir"
+rm -rf src
+##### End Debugging ####
 
 # disable services we do not need
 systemctl disable systemd-resolved fstrim.timer fstrim
